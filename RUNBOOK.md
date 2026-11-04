@@ -32,7 +32,7 @@ Check afterwards:
 
 ```sql
 select count(*), count(end_date) from social_golden_data.editorial_playlists_storico;  -- 2nd = 0 after a first run
-select * from social_golden_data.editorial_playlists;                                   -- 15 rows
+select * from social_golden_data.editorial_playlists;                                   -- 22 rows
 ```
 
 ---

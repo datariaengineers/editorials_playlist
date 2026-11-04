@@ -32,7 +32,7 @@ RUN_TIMEZONE = "Europe/Rome"
 
 REQUEST_TIMEOUT = 30
 # Seconds to wait between playlist fetches — the endpoint is public and we only
-# hit it ~15 times per run, so this is politeness, not a hard rate limit.
+# hit it ~20 times per run, so this is politeness, not a hard rate limit.
 REQUEST_DELAY: float = 1.0
 
 # retry_on_error tuning for the embed fetch.
@@ -75,6 +75,8 @@ class Editorial:
 #     the embed endpoint (renders a 404).
 #   - "Big Italiani" (37i9dQZF1DX7zFcFgqJ2qf): status playlist, not part of the
 #     signal we care about here.
+#   - "Italian Pop Mix" / "Italian Punk Mix" (37i9dQZF1EI...): algorithmic mixes,
+#     not editorially curated.
 EDITORIALS: tuple[Editorial, ...] = (
     Editorial("37i9dQZEVXbIQnj7RRhdSX", "Top 50 - Italia"),
     Editorial("37i9dQZF1DX01NP73ErE8b", "Alta Rotazione"),
@@ -91,4 +93,11 @@ EDITORIALS: tuple[Editorial, ...] = (
     Editorial("37i9dQZF1DX0KBgD4Jf5tY", "Fresh Finds Italia"),
     Editorial("37i9dQZF1DWVjDgOMO8jZl", "RADAR Italia"),
     Editorial("37i9dQZF1DWUQru3jd69v5", "Raptopia"),
+    Editorial("37i9dQZF1DX14EWeH2Pwf3", "Plus Ultra"),
+    Editorial("37i9dQZF1DWXU2naFUn37x", "Street Culto"),
+    Editorial("37i9dQZF1DWWY5glQ3K3VV", "Club Rap"),
+    Editorial("37i9dQZF1DWZaZlNfUaddK", "Canzoni migliori dell'anno finora"),
+    Editorial("37i9dQZF1DX6PSDDh80gxI", "Indie Italia"),
+    Editorial("37i9dQZF1DWViUlcvfltyZ", "Rock Italia"),
+    Editorial("37i9dQZF1DWXRPjCBAuFj3", "Tendenze Rap 2026"),
 )
