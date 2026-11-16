@@ -100,6 +100,16 @@ Elenco fisso in `EDITORIALS` (`src/consts.py`), dataclass
 | Indie Italia | `37i9dQZF1DX6PSDDh80gxI` |
 | Rock Italia | `37i9dQZF1DWViUlcvfltyZ` |
 | Tendenze Rap 2026 | `37i9dQZF1DWXRPjCBAuFj3` |
+| New Music Friday | `37i9dQZF1DX4JAvHpjipBk` |
+| New Music Friday UK & Ireland | `37i9dQZF1DX4W3aJJYCDfV` |
+| Fresh Finds | `37i9dQZF1DWWjGdmeTyeJ6` |
+| All New Rock | `37i9dQZF1DWZryfp6NSvtz` |
+| MARROW | `37i9dQZF1DXcF6B6QPhFDv` |
+| VOLUME | `37i9dQZF1DWWJOmJ7nRx0C` |
+| ALT NOW | `37i9dQZF1DWVqJMsgEN0F4` |
+| the new alt | `37i9dQZF1DX82GYcclJ3Ug` |
+| Indie's Top 50 | `37i9dQZF1DX2Nc3B70tvx0` |
+| Feel-Good Indie Rock | `37i9dQZF1DX2sUQwD7tbmL` |
 
 Rispetto alla versione precedente: **aggiunta** Raptopia; **rimosse** "Viral 50 -
 Italia" (non servita via embed) e "Big Italiani" (playlist di status, fuori dal
@@ -212,7 +222,7 @@ Due funzioni pure testate:
    `to_close` (`track_id IN (...) AND end_date IS NULL`), `add_all` delle righe
    dei nuovi stint (una per nome artista; traccia senza artisti parseabili → una
    riga con `artist_name` `NULL`), commit;
-7. riga finale: `fetched N/22, opened X, closed Y, skipped Z [lista playlist]`;
+7. riga finale: `fetched N/32, opened X, closed Y, skipped Z [lista playlist]`;
 8. `--dry-run` logga il piano e non scrive.
 
 ### `cli.py` / `main.py` / env
@@ -272,7 +282,7 @@ successivo è il tempo passato fuori.
 4. `uv run main.py` (primo giro) → tutto apre nuovi stint (`end_date` NULL);
    `select count(*), count(end_date) from
    social_golden_data.editorial_playlists_storico` (il secondo deve essere 0);
-   `editorial_playlists` popolata con 22 righe.
+   `editorial_playlists` popolata con 32 righe.
 5. `uv run main.py` (secondo giro, stesso giorno) → no-op: 0 open, 0 close,
    `skipped 0`.
 6. Chiudere a mano una riga (`update ... set end_date = current_date where ...`)

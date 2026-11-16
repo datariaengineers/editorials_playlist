@@ -32,7 +32,7 @@ RUN_TIMEZONE = "Europe/Rome"
 
 REQUEST_TIMEOUT = 30
 # Seconds to wait between playlist fetches — the endpoint is public and we only
-# hit it ~20 times per run, so this is politeness, not a hard rate limit.
+# hit it ~30 times per run, so this is politeness, not a hard rate limit.
 REQUEST_DELAY: float = 1.0
 
 # retry_on_error tuning for the embed fetch.
@@ -100,4 +100,14 @@ EDITORIALS: tuple[Editorial, ...] = (
     Editorial("37i9dQZF1DX6PSDDh80gxI", "Indie Italia"),
     Editorial("37i9dQZF1DWViUlcvfltyZ", "Rock Italia"),
     Editorial("37i9dQZF1DWXRPjCBAuFj3", "Tendenze Rap 2026"),
+    Editorial("37i9dQZF1DX4JAvHpjipBk", "New Music Friday"),
+    Editorial("37i9dQZF1DX4W3aJJYCDfV", "New Music Friday UK & Ireland"),
+    Editorial("37i9dQZF1DWWjGdmeTyeJ6", "Fresh Finds"),
+    Editorial("37i9dQZF1DWZryfp6NSvtz", "All New Rock"),
+    Editorial("37i9dQZF1DXcF6B6QPhFDv", "MARROW"),
+    Editorial("37i9dQZF1DWWJOmJ7nRx0C", "VOLUME"),
+    Editorial("37i9dQZF1DWVqJMsgEN0F4", "ALT NOW"),
+    Editorial("37i9dQZF1DX82GYcclJ3Ug", "the new alt"),
+    Editorial("37i9dQZF1DX2Nc3B70tvx0", "Indie's Top 50"),
+    Editorial("37i9dQZF1DX2sUQwD7tbmL", "Feel-Good Indie Rock"),
 )
