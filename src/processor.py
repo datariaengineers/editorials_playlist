@@ -51,6 +51,12 @@ logger = logging.getLogger(__name__)
 _OWNED_TABLES = [EditorialPlaylist.__table__, EditorialPlaylistStorico.__table__]
 
 
+def merge_tracked(static, scouting_rows) -> list[Editorial]:
+    """Static EDITORIALS first, then the scouting rows (id, name) not already in it."""
+    ids = {e.playlist_id for e in static}
+    return list(static) + [Editorial(pid, name) for pid, name in scouting_rows if pid not in ids]
+
+
 def diff_playlist(
     present_ids: set[str], open_ids: set[str]
 ) -> tuple[set[str], set[str], set[str]]:
@@ -120,6 +126,22 @@ class EditorialsTracker:
         db.execute(stmt)
         db.commit()
 
+    def _tracked(self) -> list[Editorial]:
+        """EDITORIALS plus the active playlists the scouting pipeline added to the registry."""
+        try:
+            with Session(self.engine) as db:
+                rows = db.execute(
+                    select(EditorialPlaylist.playlist_id, EditorialPlaylist.playlist_name)
+                    .where(EditorialPlaylist.source == "scouting", EditorialPlaylist.active.is_(True))
+                ).all()
+        except SQLAlchemyError:
+            logger.warning(
+                "could not read scouting playlists (sql/schema.sql columns missing?) - "
+                "tracking only EDITORIALS"
+            )
+            return list(EDITORIALS)
+        return merge_tracked(EDITORIALS, rows)
+
     def _open_stints(self, db: Session) -> dict[str, set[str]]:
         """Currently-open stints, straight from the DB: {playlist_id: {track_id}}."""
         open_by_playlist: dict[str, set[str]] = defaultdict(set)
@@ -152,9 +174,10 @@ class EditorialsTracker:
             self._ensure_tables()
 
         # 1. fetch every playlist up front
+        tracked = self._tracked()
         fetched: list[tuple[Editorial, list[PlaylistTrack]]] = []
         fetch_failed: list[str] = []
-        for ed in EDITORIALS:
+        for ed in tracked:
             try:
                 tracklist = fetch_playlist_tracklist(ed.playlist_id, self.session)
             except PlaylistUnavailable:
@@ -203,11 +226,11 @@ class EditorialsTracker:
             _emit_metric(SKIPPED_METRIC, skipped_total)
 
             # 3. circuit breaker: too many playlists unusable -> abort, write nothing
-            if skipped_total > len(EDITORIALS) // 2:
+            if skipped_total > len(tracked) // 2:
                 logger.error(
                     "circuit breaker: %d/%d editorials skipped this run "
                     "(fetch-failed: %s | partial: %s) - aborting without writing",
-                    skipped_total, len(EDITORIALS),
+                    skipped_total, len(tracked),
                     ", ".join(fetch_failed) or "-", ", ".join(partial) or "-",
                 )
                 if not dry_run:
@@ -259,7 +282,7 @@ class EditorialsTracker:
             logger.info(
                 "done: %s - fetched %d/%d playlists, opened %d, closed %d, "
                 "skipped %d%s",
-                today, len(fetched), len(EDITORIALS), opened, closed,
+                today, len(fetched), len(tracked), opened, closed,
                 skipped_total,
                 f" [{', '.join(skipped_names)}]" if skipped_names else "",
             )

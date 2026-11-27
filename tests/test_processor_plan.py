@@ -46,3 +46,13 @@ def test_not_partial_for_small_drop_or_growth():
 
 def test_not_partial_on_first_run_when_nothing_open():
     assert is_partial_response(50, 0) is False
+
+
+def test_merge_tracked_adds_scouting_playlists_once():
+    from src.consts import Editorial
+    from src.processor import merge_tracked
+
+    static = (Editorial("A", "Static A"), Editorial("B", "Static B"))
+    out = merge_tracked(static, [("B", "dup"), ("C", "Scouting C")])
+    assert [e.playlist_id for e in out] == ["A", "B", "C"]
+    assert out[1].name == "Static B"  # the static name wins

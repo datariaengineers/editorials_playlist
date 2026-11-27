@@ -3,12 +3,26 @@
 -- but that needs DDL rights on the schema; run this once as a DBA if the app
 -- role can't create tables.
 
--- Registry of the tracked editorial playlists. Mirrors EDITORIALS in
--- src/consts.py; the pipeline upserts it on every run.
+-- Registry of the tracked playlists: EDITORIALS in src/consts.py (source='static',
+-- upserted on every run) plus the playlists the Radar Talent scouting pipeline adds
+-- (source='scouting': Spotify editorials and independent curated playlists it finds).
+-- Every run tracks the static ones and the scouting ones with active = true.
 CREATE TABLE IF NOT EXISTS social_golden_data.editorial_playlists (
     playlist_id   text PRIMARY KEY,
-    playlist_name text NOT NULL
+    playlist_name text NOT NULL,
+    kind          text NOT NULL DEFAULT 'editorial',  -- editorial | curated
+    source        text NOT NULL DEFAULT 'static',     -- static | scouting
+    owner         text,
+    active        boolean NOT NULL DEFAULT true,
+    added_at      date NOT NULL DEFAULT current_date
 );
+-- Existing installs: add the columns (no-op when already there).
+ALTER TABLE social_golden_data.editorial_playlists
+    ADD COLUMN IF NOT EXISTS kind     text NOT NULL DEFAULT 'editorial',
+    ADD COLUMN IF NOT EXISTS source   text NOT NULL DEFAULT 'static',
+    ADD COLUMN IF NOT EXISTS owner    text,
+    ADD COLUMN IF NOT EXISTS active   boolean NOT NULL DEFAULT true,
+    ADD COLUMN IF NOT EXISTS added_at date NOT NULL DEFAULT current_date;
 
 -- One row per stint of a track in a playlist, one row per credited artist name.
 -- start_date : first run that saw the track in the playlist (this stint).
