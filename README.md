@@ -28,7 +28,9 @@ Required env vars (loaded from `.env` via `load_dotenv()`): `DB_HOST`, `DB_NAME`
 
 1. `src/consts.py::EDITORIALS` — the fixed list of tracked playlists. Every run
    upserts it into `social_golden_data.editorial_playlists` (`playlist_id`,
-   `playlist_name`).
+   `playlist_name`, `source = 'static'`). The run also tracks the rows the Radar
+   Talent scouting pipeline adds there (`source = 'scouting'`, `active = true`):
+   Spotify editorials and independent curated playlists found while scouting.
 2. For each, `src/embed.py` fetches the public embed page
    (`open.spotify.com/embed/playlist/{id}`) and parses its `__NEXT_DATA__` JSON
    into a `list[PlaylistTrack]` (track id, title, artist string). The endpoint

@@ -3,8 +3,9 @@
 Owned by this pipeline (created at runtime with `metadata.create_all(...,
 checkfirst=True)` — no migration tool in this repo):
 
-- `EditorialPlaylist` — registry of the tracked playlists (id + name). Mirrors
-  `EDITORIALS` in src/consts.py; re-upserted on every run.
+- `EditorialPlaylist` — registry of the tracked playlists (id + name). Holds
+  `EDITORIALS` from src/consts.py (source='static', re-upserted on every run)
+  plus the playlists added by the scouting pipeline (source='scouting').
 - `EditorialPlaylistStorico` — stint history and state in one: one row per
   (playlist, track, artist name, stint); `end_date IS NULL` marks an open stint.
 """
@@ -24,6 +25,13 @@ class EditorialPlaylist(SQLModel, table=True):
 
     playlist_id: str = Field(primary_key=True)
     playlist_name: str
+    # Added by the Radar Talent scouting pipeline (Scouting_repo, flow finalize): source='scouting'.
+    # Rows from EDITORIALS in consts.py are source='static'. See sql/schema.sql.
+    kind: str = Field(default="editorial")  # editorial | curated
+    source: str = Field(default="static")   # static | scouting
+    owner: str | None = Field(default=None)
+    active: bool = Field(default=True)
+    added_at: date = Field(default_factory=date.today)
 
 
 class EditorialPlaylistStorico(SQLModel, table=True):
